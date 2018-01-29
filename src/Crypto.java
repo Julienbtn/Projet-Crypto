@@ -96,14 +96,15 @@ public class Crypto {
         BigInteger R = chiffrement(r,n);
         BigInteger S = chiffrement(s,n);
 
-        BigInteger X1 = X.multiply(R).modPow(n,new BigInteger("2"));
-        BigInteger Y1 = Y.multiply(S).modPow(n,new BigInteger("2"));
+        BigInteger X1 = X.multiply(R).modPow(X,n.pow(2));
+        BigInteger Y1 = Y.multiply(S).modPow(Y,n.pow(2));
 //Alice
 
         //BigInteger X1 = chiffrement(X.add(R),n);
         //BigInteger Y1 = chiffrement(Y.add(S),n);
 
-        out.println("X1 = "+ X1 + "\nx1 = " + dechiffrement(X1,phi_n,n) + "\nr+x = " + (r.add(x)));
+        out.println("X1 = "+ X1 + "\nx1 = " + dechiffrement(X1,phi_n,n) + "\nr+x = " + (r.add(x))+ "\ny1 = " +
+                dechiffrement(Y1,phi_n,n)+"\ns+y = " + (s.add(y)));
 
         BigInteger x1 = dechiffrement(X1,phi_n,n);
         BigInteger y1 = dechiffrement(Y1,phi_n,n);

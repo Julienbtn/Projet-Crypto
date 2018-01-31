@@ -13,113 +13,32 @@ public class Crypto {
 
     public static void main(String[] args)
     {
-        //listeElementZn(53);
-        //listeElementZn(55);
+        PaillierSource alice = new PaillierSource();
+        PaillierUser bob = new PaillierUser(alice.getPk());
+        
+        Random rnd = new Random();
+        
+        for (int i=0; i<100; i++) {
 
-        //elementsInversiblesZn(53);
-        //elementsInversiblesZn(55);
+        	BigInteger x = new BigInteger(1024, rnd).mod(alice.getPk());
+        	BigInteger y = new BigInteger(1024, rnd).mod(alice.getPk());
+        	BigInteger X = alice.chiffrement(x);
+        	BigInteger Y = alice.chiffrement(y);
+        	
+        	BigInteger attendu = x.multiply(y).mod(alice.getPk());
+        	
+        	BigInteger[] ajoutes = bob.ajouteAlea(X, Y);
+        	
+        	
+        	BigInteger trouve = alice.dechiffrement(
+    			bob.retireAleas(
+					alice.multiplier(ajoutes[0], ajoutes[1])
+				)
+			);
 
-        //System.out.print(testPrimalite(BigInteger.valueOf(53)));
-        //System.out.print(testFermat(BigInteger.valueOf(53)));
-
-        //erreurFermat(20000);
-
-        /*// 5)
-        BigInteger p = new BigInteger(512, Integer.MAX_VALUE, new Random());
-        BigInteger q = new BigInteger(512, Integer.MAX_VALUE, new Random());
-        System.out.println("p = " + p);
-        System.out.println("q = " + q);
-
-        // 6)
-        BigInteger n = p.multiply(q);
-        BigInteger phi_n = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
-        System.out.println("n = " + n);
-        System.out.println("phi_n = " + phi_n);
-
-        // 7)
-        BigInteger e = new BigInteger(16, Integer.MAX_VALUE, new Random());
-        System.out.println("e = " + e);
-
-        // 8)
-        BigInteger d = e.modInverse(phi_n);
-        System.out.println("d = " + d);
-        System.out.println("e*d = " + e.multiply(d).mod(phi_n));
-
-        // 9)
-        BigInteger r = new BigInteger(512, new Random());
-        BigInteger X = r.modPow(e, n);
-        BigInteger Xd = X.modPow(d, n);
-        System.out.println("r  = " + r);
-        System.out.println("X = " + X);
-        System.out.println("Xd = " + Xd);*/
-
-        /*BigInteger[] tab;
-        tab = KeyGen(512);
-
-        BigInteger r = new BigInteger(512, new Random());
-        System.out.println("r  = " + r);
-        BigInteger X = Encrypt(r, tab[1], tab[0]);
-        X = Decrypt(X, tab[2], tab[0]);
-        System.out.println("X  = " + X);*/
-
-        /*BigInteger p=  BigInteger.probablePrime(512,new Random());
-        BigInteger q=  BigInteger.probablePrime(512,new Random());
-
-        BigInteger n = p.multiply(q);
-        BigInteger phi_n = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
-
-        BigInteger m = new BigInteger(1024,new Random());
-        m = m.mod (n);
-        System.out.println("mon message : " + m.toString());
-        BigInteger c = chiffrement(m,n);
-        System.out.println("message crypté : " + c.toString());
-        BigInteger message = dechiffrement(c,phi_n,n);
-        System.out.println("mon message : " + message.toString());*/
-
-        BigInteger x = new BigInteger(512,new Random());
-        BigInteger y = new BigInteger(512,new Random());
-
-        out.println("x = "+ x + "\ny = " + y + "\nx*y = " +x.multiply(y));
-
-        BigInteger p=  BigInteger.probablePrime(256,new Random());
-        BigInteger q=  BigInteger.probablePrime(256,new Random());
-
-        BigInteger n = p.multiply(q);
-        BigInteger phi_n = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
-
-        BigInteger X = chiffrement(x,n);
-        BigInteger Y = chiffrement(y,n);
-// bob
-        BigInteger r = new BigInteger(512,new Random());
-        BigInteger s = new BigInteger(512,new Random());
-
-        BigInteger R = chiffrement(r,n);
-        BigInteger S = chiffrement(s,n);
-
-        BigInteger X1 = X.multiply(R).modPow(X,n.pow(2));
-        BigInteger Y1 = Y.multiply(S).modPow(Y,n.pow(2));
-//Alice
-
-        //BigInteger X1 = chiffrement(X.add(R),n);
-        //BigInteger Y1 = chiffrement(Y.add(S),n);
-
-        out.println("X1 = "+ X1 + "\nx1 = " + dechiffrement(X1,phi_n,n) + "\nr+x = " + (r.add(x))+ "\ny1 = " +
-                dechiffrement(Y1,phi_n,n)+"\ns+y = " + (s.add(y)));
-
-        BigInteger x1 = dechiffrement(X1,phi_n,n);
-        BigInteger y1 = dechiffrement(Y1,phi_n,n);
-
-        BigInteger res = chiffrement(x1.multiply(y1),n);
-
-        out.println("x1 : " + x1 + "\n" + "y1 : " + y1 );
-
-        out.println("X+R * Y+S = " + dechiffrement(res, phi_n,n));
-
-        BigInteger Z = res.add(s.multiply(X).negate()).add(r.multiply(Y).negate()).add(r.multiply(S).negate());
-
-        out.println("Z :" + Z);
-
-        out.println("Decrypt :" + dechiffrement(Z,phi_n,n));
+        	System.out.println(String.format("cas %d : %b", i, trouve.equals(attendu)));
+        	//System.out.println(String.format("attendu\t%s \ntrouve\t%s\n", attendu, trouve));
+        }
 }
 
     public static BigInteger chiffrement(BigInteger m, BigInteger n)
